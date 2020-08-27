@@ -16,5 +16,6 @@ int main() {
   assert(vitalsisOk(60,95,50)==false);
   assert(vitalsisOk(60,50,110)==false);
   assert(vitalsisOk(80,95,110)==false);
+  assert(vitalsisOk(60,110,40)==false);
 
 }
