@@ -24,6 +24,6 @@ int main() {
   assert(spo2Ok(95)==true);
   assert(respRateOk(60)==true);
   assert(bpmOk(60)==false);
-  assert(spo2Ok(90)==false);
-  assert(respRateOk(40)==false);
+  assert(spo2Ok(80)==false);
+  assert(respRateOk(20)==false);
 }
