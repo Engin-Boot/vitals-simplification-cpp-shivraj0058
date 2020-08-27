@@ -4,7 +4,7 @@ bool vitalsIsInsideLimit(float value,int lowerlimit, int upperlimit){
 }
 
 bool vitalsisOk(float bpm,float spo2,float respRate){
-  return(vitalIsInsideLimit(bpm,70,150) && vitalIsInsideLimit(spo2,90,100) && vitalIsiniLimit(respRate,30,100));
+  return(vitalsIsInsideLimit(bpm,70,150) && vitalsIsInsideLimit(spo2,90,100) && vitalsIsInsideLimit(respRate,30,100));
 }
 
 int main() {
@@ -17,5 +17,6 @@ int main() {
   assert(vitalsisOk(60,50,110)==false);
   assert(vitalsisOk(80,95,110)==false);
   assert(vitalsisOk(60,110,40)==false);
+  assert(vitalsisOk(10,110,40)==false);
 
 }
