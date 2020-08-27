@@ -1,29 +1,20 @@
 #include <assert.h>
+bool vitalsIsInsideLimit(float value,int lowerlimit, int upperlimit){
+  return(value>=lowerlimit && value <=upperlimit);
+}
 
-bool bpmOk(float bpm){
-  if(bpm < 70 || bpm > 150) {
-    return false;
-  }
-  return true;
-}
-bool spo2Ok(float spo2){
-  if(spo2 < 90) {
-    return false;
-  } 
-  return true;
-}
-bool respRateOk(float respRate) {
-  if(respRate < 30 || respRate > 95) {
-    return false;
-  }
-  return true;
+bool vitalsisOk(float bpm,float spo2,float respRate){
+  return(vitalIsInsideLimit(bpm,70,150) && vitalIsInsideLimit(spo2,90,100) && vitalIsiniLimit(respRate,30,100));
 }
 
 int main() {
-  assert(bpmOk(80)==true);
-  assert(spo2Ok(95)==true);
-  assert(respRateOk(60)==true);
-  assert(bpmOk(60)==false);
-  assert(spo2Ok(80)==false);
-  assert(respRateOk(20)==false);
+  assert(vitalsIsInsideLimit(40,30,90)==true);
+  assert(vitalsIsInsideLimit(20,30,90)==false);
+  assert(vitalsIsInsideLimit(100,30,90)==false);
+  assert(vitalsisOk(80,95,50)==true);
+  assert(vitalsisOk(80,110,40)==false);
+  assert(vitalsisOk(60,95,50)==false);
+  assert(vitalsisOk(60,50,110)==false);
+  assert(vitalsisOk(80,95,110)==false);
+
 }
