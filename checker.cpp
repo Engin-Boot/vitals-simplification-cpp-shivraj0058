@@ -1,22 +1,90 @@
 #include <assert.h>
-bool vitalsIsInsideLimit(float value,int lowerlimit, int upperlimit){
-  return(value>=lowerlimit && value <=upperlimit);
-}
+#include <iostream>
 
-bool vitalsisOk(float bpm,float spo2,float respRate){
-  return(vitalsIsInsideLimit(bpm,70,150) && vitalsIsInsideLimit(spo2,90,100) && vitalsIsInsideLimit(respRate,30,100));
-}
+class AlertInterface
+{
+  public:
+    virtual void raiseAlert(const char* vitalName, const char* level) = 0;
+};
+
+class AlertWithSMS: public AlertInterface
+{
+  public:
+    void raiseAlert(const char* vitalName, const char* level) override
+    {
+      std::cout << "SMS: " << vitalName << " " << level << std::endl;
+    }
+};
+
+class AlertWithSound: public AlertInterface
+{
+  public:
+    void raiseAlert(const char* vitalName, const char* level) override
+    {
+      std::cout << "Sound: " << vitalName << " " << level << std::endl;  //'what'
+    }
+};
+
+class AlertIntegrator : public AlertInterface
+{
+  private:
+    AlertWithSMS smsAlerter;
+    AlertWithSound soundAlerter;
+  public:
+    void raiseAlert(const char* vitalName, const char* level) override
+    {
+      smsAlerter.raiseAlert(vitalName, level);
+      soundAlerter.raiseAlert(vitalName, level);
+    }
+};
+
+class RangeChecker
+{
+  private:
+    int lower;
+    int upper;
+    const char* vitalName;
+    AlertInterface* alerter;
+  public:
+    RangeChecker(const char* name, int low, int up, AlertInterface* alerterPtr)
+    {
+      vitalName = name;
+      lower = low;
+      upper = up;
+      alerter = alerterPtr;
+    }
+    void checkAgainstRange(float value)
+    {
+      if(value < lower) {
+        alerter->raiseAlert(vitalName, "too low");  //'when'
+      } else if(value > upper) {
+        alerter->raiseAlert(vitalName, "too high");
+      }
+    }
+};
+
+class VitalsIntegrator
+{
+  private:
+    RangeChecker bpmChecker, spo2Checker, respChecker;
+  public:
+    VitalsIntegrator(AlertInterface* alertPtr): 
+      bpmChecker("pulse rate", 70, 150, alertPtr),
+      spo2Checker("spo2", 90, 101, alertPtr),
+      respChecker("resp rate", 30, 95, alertPtr)
+    {}
+    void checkAllVitals(float bpm, float spo2, float respRate)
+    {
+      bpmChecker.checkAgainstRange(bpm);
+      spo2Checker.checkAgainstRange(spo2);
+      respChecker.checkAgainstRange(respRate);
+    }
+};
 
 int main() {
-  assert(vitalsIsInsideLimit(40,30,90)==true);
-  assert(vitalsIsInsideLimit(20,30,90)==false);
-  assert(vitalsIsInsideLimit(100,30,90)==false);
-  assert(vitalsisOk(80,95,50)==true);
-  assert(vitalsisOk(80,110,40)==false);
-  assert(vitalsisOk(60,95,50)==false);
-  assert(vitalsisOk(60,50,110)==false);
-  assert(vitalsisOk(80,95,110)==false);
-  assert(vitalsisOk(60,110,40)==false);
-  assert(vitalsisOk(10,110,40)==false);
+  AlertIntegrator alerter;  
+  VitalsIntegrator vitals(&alerter);
 
+  vitals.checkAllVitals(80, 95, 60);
+  vitals.checkAllVitals(60, 90, 40);
 }
